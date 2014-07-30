@@ -18,15 +18,16 @@ class ScoreboardScene extends Component
 
     override public function onAdded()
     {
+        var playBtn = new ImageSprite(_ctx.pack.getTexture("PlayButton"));
+        var playBtnOffsetY = playBtn.getNaturalHeight() / 2;
+
         var scoreboard = new ImageSprite(_ctx.pack.getTexture("Scoreboard"));
-        scoreboard.centerAnchor().setXY(System.stage.width / 2, System.stage.height / 2);
+        scoreboard.centerAnchor().setXY(System.stage.width / 2, (System.stage.height / 2) - playBtnOffsetY);
         var scoreboardEntity = new Entity().add(scoreboard);
         owner.addChild(scoreboardEntity);
-
         var boardBottom = scoreboard.y._ + (scoreboard.getNaturalHeight() / 2);
 
         var playBtn = new ImageSprite(_ctx.pack.getTexture("PlayButton"));
-        var playBtnOffsetY = (playBtn.getNaturalHeight() / 2);
         playBtn.centerAnchor().setXY(System.stage.width / 2, boardBottom + playBtnOffsetY + 10);
         playBtn.pointerDown.connect(onClickPlay);
         owner.addChild(new Entity().add(playBtn));

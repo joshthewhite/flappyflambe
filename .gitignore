@@ -1,6 +1,8 @@
 /build/
-
+.idea
+*.iml
 .*.swp
 ._*
 .DS_Store
 RECOVER_*
+
