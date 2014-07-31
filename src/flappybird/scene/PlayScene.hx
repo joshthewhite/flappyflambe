@@ -42,9 +42,9 @@ import flappybird.component.BodyComponent;
 
 class PlayScene extends Component
 {
-    public static inline var GRAVITY = 900;
+    public static inline var GRAVITY = 1000;
     public static inline var MAX_UP_SPEED = -300;
-    public static inline var FLAP_FORCE = -800;
+    public static inline var FLAP_FORCE = -1000;
 
     private var _ctx :FlappyBirdContext;
 
@@ -200,7 +200,7 @@ class PlayScene extends Component
                 _pipelayer.addChild(entity);
             }
         }));
-        scripts.push(new Delay(1.1));
+        scripts.push(new Delay(1.15));
         pipeScript.run(new Repeat(new Sequence(scripts)));
         _world.add(pipeScript);
 
