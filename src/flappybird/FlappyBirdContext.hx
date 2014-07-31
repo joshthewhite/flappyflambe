@@ -29,6 +29,7 @@ class FlappyBirdContext
 
     public var director(default, null) :Director;
     public var logger(default, null) :Logger;
+    public var bestScore(default, default) = 0;
 
     // Some constructed assets
     public var title40Font(default, null) :Font;

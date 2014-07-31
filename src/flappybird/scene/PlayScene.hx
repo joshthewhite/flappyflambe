@@ -1,5 +1,7 @@
 package flappybird.scene;
 
+import flambe.display.TextSprite;
+import flambe.animation.AnimatedFloat;
 import flappybird.FlappyBirdContext;
 import flappybird.component.Flash;
 import haxe.Timer;
@@ -56,8 +58,9 @@ class PlayScene extends Component
     private var _birdBody :Body;
     private var _started = false;
     private var _dead = false;
+    private var _scoreSprite :TextSprite;
 
-    public var _score = 0;
+    public var _score = new AnimatedFloat(0);
 
     public function new (ctx :FlappyBirdContext)
     {
@@ -84,7 +87,7 @@ class PlayScene extends Component
         _world.addChild(_pipelayer);
 
         var getReady = new ImageSprite(_ctx.pack.getTexture("GetReady"));
-        getReady.centerAnchor().setXY(System.stage.width / 2, System.stage.height * 0.25);
+        getReady.centerAnchor().setXY(System.stage.width / 2, System.stage.height * 0.33);
         _getReady = new Entity().add(getReady);
         _world.addChild(_getReady);
 
@@ -100,6 +103,19 @@ class PlayScene extends Component
         overlay.setAlpha(0);
         _overlayConnection = overlay.pointerDown.connect(flap);
         _world.addChild(new Entity().add(overlay));
+
+        _scoreSprite = new TextSprite(_ctx.title40Font);
+        _scoreSprite.text = "" + Std.int(_score._);
+        _scoreSprite.centerAnchor().setXY(
+            System.stage.width / 2,
+            getReady.y._ - (getReady.getNaturalHeight() / 2) - (_scoreSprite.getNaturalHeight() / 2) - 15
+        );
+        _world.addChild(new Entity().add(_scoreSprite));
+
+        _score.watch(function (score :Float, _) {
+            _scoreSprite.text = "" + Std.int(score);
+            _scoreSprite.x._ = System.stage.width / 2;
+        });
     }
 
     private function addLand() :PatternSprite
@@ -121,6 +137,7 @@ class PlayScene extends Component
         var space :SpaceComponent = _world.get(SpaceComponent);
         var landBody = new Body(BodyType.STATIC);
         landBody.shapes.add(new Polygon(Polygon.rect(x, y, width, height)));
+        landBody.cbTypes.add(space.visibleType);
         space.addBody(landBody);
 
         // Might as well tack on the ceiling here.
@@ -156,11 +173,14 @@ class PlayScene extends Component
 
         var space :SpaceComponent = _world.get(SpaceComponent);
 
+        var birdType = new CbType();
+
         _birdBody = new Body();
         var birdShape = new Polygon(Polygon.box(34, 24), Material.sand());
         birdShape.filter.collisionMask = ~4;
         _birdBody.shapes.add(birdShape);
         _birdBody.position = new Vec2(sprite.x._, sprite.y._);
+        _birdBody.cbTypes.add(birdType);
         _birdBody.space = space.getSpace();
 
         _bird.add(new BodyComponent(_birdBody));
@@ -187,38 +207,53 @@ class PlayScene extends Component
         space.getSpace().listeners.add(new InteractionListener(
             CbEvent.BEGIN,
             InteractionType.COLLISION,
-            CbType.ANY_BODY,
-            CbType.ANY_BODY,
+            space.visibleType,
+            birdType,
             handleCollision
         ));
+
+        space.getSpace().listeners.add(new InteractionListener(
+            CbEvent.BEGIN,
+            InteractionType.SENSOR,
+            birdType,
+            space.sensorType,
+            handleScore
+        ));
+    }
+
+    private function handleScore(e :InteractionCallback) :Void
+    {
+        _score._ += 1;
     }
 
     private function handleCollision(e :InteractionCallback)
     {
         // Find the one that isn't the bird.
         var int = e.int1;
-        if (int.castBody.type == BodyType.DYNAMIC) {
-            int = e.int2;
-        }
-
         var shape :Shape = int.castShape;
         var body :Body = int.castBody;
         var normal = body.arbiters.at(0).collisionArbiter.normal;
 
         if (normal.y == 1 && body.type == BodyType.STATIC) {
-            trace("Hit ceiling");
             return;
         }
 
-        if (!_dead) {
-            _dead = true;
-            _world.add(new Flash(System.stage.width, System.stage.height, function () {
-                _ctx.showPrompt(_score);
-            }));
+        if (_dead) {
+            return;
+        }
+        _dead = true;
+
+        _world.add(new Flash(System.stage.width, System.stage.height, function () {
+            _ctx.showPrompt(Std.int(_score._));
+        }));
+
+        if (_score._ > _ctx.bestScore) {
+            _ctx.bestScore = Std.int(_score._);
         }
 
         // Stop everything.
         _overlayConnection.dispose();
+        _scoreSprite.alpha.animateTo(0, 0.2);
         _world.get(SpaceComponent).stopPipes();
         _land.get(BackgroundScroller).speed._ = 0;
         _sky.get(BackgroundScroller).speed._ = 0;

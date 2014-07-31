@@ -50,7 +50,6 @@ class Flash extends Component
                         ownerScript.run(new Sequence([
                             new Shake(5, 5, FLASH_DURATION * 2),
                             new CallFunction(function () {
-                                trace(oldX, oldY);
                                 ownerSprite.x._ = oldX;
                                 ownerSprite.y._ = oldY;
                             })

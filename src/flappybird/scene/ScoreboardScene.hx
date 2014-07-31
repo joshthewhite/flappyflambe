@@ -1,5 +1,7 @@
 package flappybird.scene;
 
+import flambe.display.Font.TextAlign;
+import flambe.display.TextSprite;
 import flambe.Entity;
 import flambe.display.ImageSprite;
 import flambe.Component;
@@ -26,6 +28,22 @@ class ScoreboardScene extends Component
         var scoreboardEntity = new Entity().add(scoreboard);
         owner.addChild(scoreboardEntity);
         var boardBottom = scoreboard.y._ + (scoreboard.getNaturalHeight() / 2);
+
+        var scoreSprite = new TextSprite(_ctx.title40Font);
+        scoreSprite.setScale(0.5);
+        scoreSprite.text = "" + Std.int(_score);
+        scoreSprite.setXY(150, 90);
+        scoreSprite.setWrapWidth(160);
+        scoreSprite.align = TextAlign.Center;
+        scoreboardEntity.addChild(new Entity().add(scoreSprite));
+
+        var bestScoreSprite = new TextSprite(_ctx.title40Font);
+        bestScoreSprite.setScale(0.5);
+        bestScoreSprite.text = "" + Std.int(_ctx.bestScore);
+        bestScoreSprite.setXY(150, 132);
+        bestScoreSprite.setWrapWidth(160);
+        bestScoreSprite.align = TextAlign.Center;
+        scoreboardEntity.addChild(new Entity().add(bestScoreSprite));
 
         var playBtn = new ImageSprite(_ctx.pack.getTexture("PlayButton"));
         playBtn.centerAnchor().setXY(System.stage.width / 2, boardBottom + playBtnOffsetY + 10);
