@@ -73,12 +73,12 @@ class SpaceComponent extends Component
         }
     }
 
-    public function laySomePipe(x :Float, speed :Int, bottom :Int) :Array<Entity>
+    public function addPipe(x :Float, speed :Int, bottom :Int) :Array<Entity>
     {
-        var upperPipe = new ImageSprite(_ctx.pack.getTexture("PipeWide"));
+        var upperPipe = new ImageSprite(_ctx.pack.getTexture("Pipe"));
         upperPipe.centerAnchor();
 
-        var lowerPipe = new ImageSprite(_ctx.pack.getTexture("PipeWide"));
+        var lowerPipe = new ImageSprite(_ctx.pack.getTexture("Pipe"));
         lowerPipe.centerAnchor();
 
         var pipeWidth = upperPipe.getNaturalWidth();

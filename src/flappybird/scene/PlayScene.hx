@@ -190,7 +190,7 @@ class PlayScene extends Component
         var pipeScript = new Script();
         var scripts = new Array<Action>();
         scripts.push(new CallFunction(function () {
-            var entities = space.laySomePipe(
+            var entities = space.addPipe(
                 System.stage.width,
                 FlappyBirdContext.LAND_SPEED,
                 Std.int(landSprite.y._)
