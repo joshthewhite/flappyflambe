@@ -183,7 +183,7 @@ class PlayScene extends Component
         _birdBody.cbTypes.add(birdType);
         _birdBody.space = space.getSpace();
 
-        _bird.add(new BodyComponent(_birdBody));
+        _bird.add(new BodyComponent(_birdBody, true));
 
         var landSprite :Sprite = _land.get(Sprite);
 

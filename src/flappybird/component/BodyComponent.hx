@@ -13,10 +13,12 @@ import flambe.System;
 class BodyComponent extends Component
 {
     private var _body :Body;
+    private var _isBird :Bool;
 
-    public function new (body :Body)
+    public function new (body :Body, isBird = false)
     {
         _body = body;
+        _isBird = isBird;
     }
 
     public function getBody() :Body
@@ -29,11 +31,23 @@ class BodyComponent extends Component
         var pos = _body.position;
         if (pos.x < -100) {
             owner.dispose();
-        } else {
-            var sprite :Sprite = owner.get(Sprite);
-            sprite.x._ = pos.x;
-            sprite.y._ = pos.y;
-            sprite.rotation._ = FMath.toDegrees(_body.rotation);
+            return;
+        }
+
+        var sprite :Sprite = owner.get(Sprite);
+        sprite.x._ = pos.x;
+        sprite.y._ = pos.y;
+        //sprite.rotation._ = FMath.toDegrees(_body.rotation);
+
+        if (_isBird) {
+            var velY = _body.velocity.y;
+            var rotation = 45.0;
+            if (velY <= -50) {
+                rotation = -25.0;
+            } else if (velY < 350) {
+                rotation = velY * (45 / 350);
+            }
+            sprite.rotation._ = rotation;
         }
     }
 
